@@ -66,9 +66,7 @@ source "azure-arm" "base" {
 build {
   hcp_packer_registry {
     bucket_name = "ubuntu-jammy"
-    description = <<EOT
-    Ubuntu 22.04 (jammy) base images.
-    EOT
+    description = "Ubuntu 22.04 (jammy) base image."
     bucket_labels = {
       "owner"          = var.owner
       "dept"           = var.department
@@ -85,6 +83,7 @@ build {
     "source.azure-arm.base"
   ]
 
+  # Make sure cloud-init has finished
   provisioner "shell" {
     inline = ["/usr/bin/cloud-init status --wait"]
   }
@@ -92,5 +91,12 @@ build {
   provisioner "shell" {
     script          = "./update.sh"
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+  }
+
+  provisioner "shell" {
+    inline = [
+      "sudo ufw enable",
+      "sudo ufw allow 22"
+    ]
   }
 }
