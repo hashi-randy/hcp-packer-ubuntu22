@@ -34,10 +34,11 @@ source "amazon-ebs" "base" {
   instance_type = "t3.small"
   ssh_username  = "ubuntu"
   ami_name      = local.image_name
+  ami_regions   = var.aws_region_copies
 
   tags = {
     owner           = var.owner
-    dept            = var.department
+    department      = var.department
     source_ami_id   = data.amazon-ami.ubuntu-jammy.id
     source_ami_name = data.amazon-ami.ubuntu-jammy.name
     Name            = local.image_name
@@ -45,27 +46,32 @@ source "amazon-ebs" "base" {
 }
 
 source "azure-arm" "base" {
-  os_type         = "Linux"
+  os_type                   = "Linux"
+  build_resource_group_name = var.az_resource_group
+  vm_size                   = "Standard_B2s"
+
+  # Source image
   image_publisher = "Canonical"
   image_offer     = "0001-com-ubuntu-server-jammy"
-  image_sku       = "22_04-lts"
+  image_sku       = "22_04-lts-gen2"
+  image_version   = "latest"
 
-  #location                          = var.az_region
-  build_resource_group_name         = var.az_resource_group
-  vm_size                           = "Standard_A2_v2"
+  # Destination image
   managed_image_name                = local.image_name
   managed_image_resource_group_name = var.az_resource_group
 
   azure_tags = {
-    owner = var.owner
-    dept  = var.department
+    owner      = var.owner
+    department = var.department
+    build-time = local.timestamp
   }
+
   use_azure_cli_auth = true
 }
 
 build {
   hcp_packer_registry {
-    bucket_name = "ubuntu-jammy"
+    bucket_name = "ubuntu22-base"
     description = "Ubuntu 22.04 (jammy) base image."
     bucket_labels = {
       "owner"          = var.owner
@@ -85,18 +91,18 @@ build {
 
   # Make sure cloud-init has finished
   provisioner "shell" {
-    inline = ["/usr/bin/cloud-init status --wait"]
+    inline = ["echo 'Wait for cloud-init...' && /usr/bin/cloud-init status --wait"]
   }
 
   provisioner "shell" {
-    script          = "./update.sh"
+    script          = "${path.root}/update.sh"
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
   }
 
   provisioner "shell" {
     inline = [
-      "sudo ufw enable",
-      "sudo ufw allow 22"
+      "sudo ufw enable >/dev/null",
+      "sudo ufw allow 22 >/dev/null"
     ]
   }
 }
