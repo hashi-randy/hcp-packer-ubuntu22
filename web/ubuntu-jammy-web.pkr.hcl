@@ -65,6 +65,17 @@ source "azure-arm" "base" {
   managed_image_name                = local.image_name
   managed_image_resource_group_name = var.az_resource_group
 
+  # Compute gallery
+  shared_image_gallery_destination {
+    subscription         = var.az_subscription_id
+    resource_group       = var.az_resource_group
+    gallery_name         = var.az_compute_gallery
+    image_name           = "ubuntu22-nginx"
+    image_version        = formatdate("YYYY.MMDD.hhmm", timestamp())
+    replication_regions  = [var.az_region]
+    storage_account_type = "Standard_LRS"
+  }
+
   azure_tags = {
     owner      = var.owner
     department = var.department

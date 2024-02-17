@@ -19,6 +19,16 @@ variable "az_resource_group" {
   type        = string
 }
 
+variable "az_subscription_id" {
+  description = "The Azure subscription ID where the Compute gallery exists."
+  type      = string
+  sensitive = true
+}
+
+variable "az_compute_gallery" {
+  type    = string
+}
+
 variable "department" {
   description = "Value for the department tag."
   type        = string
