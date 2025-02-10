@@ -23,14 +23,14 @@ data "hcp-packer-artifact" "ubuntu22-base-aws" {
   platform            = "aws"
   region              = var.aws_region
 }
-
+/*
 data "hcp-packer-artifact" "ubuntu22-base-azure" {
   bucket_name         = data.hcp-packer-version.ubuntu22-base.bucket_name
   version_fingerprint = data.hcp-packer-version.ubuntu22-base.fingerprint
   platform            = "azure"
   region              = var.az_region
 }
-
+*/
 locals {
   timestamp  = regex_replace(timestamp(), "[- TZ:]", "")
   image_name = "${var.prefix}-ubuntu22-web-${local.timestamp}"
@@ -51,7 +51,7 @@ source "amazon-ebs" "base" {
     Name          = local.image_name
   }
 }
-
+/*
 source "azure-arm" "base" {
   os_type                   = "Linux"
   build_resource_group_name = var.az_resource_group
@@ -84,7 +84,7 @@ source "azure-arm" "base" {
 
   use_azure_cli_auth = true
 }
-
+*/
 build {
   hcp_packer_registry {
     bucket_name = "ubuntu22-nginx"
@@ -103,7 +103,7 @@ build {
 
   sources = [
     "source.amazon-ebs.base",
-    "source.azure-arm.base"
+#    "source.azure-arm.base"
   ]
 
   # Make sure cloud-init has finished

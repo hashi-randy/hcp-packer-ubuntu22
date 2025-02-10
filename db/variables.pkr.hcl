@@ -8,7 +8,7 @@ variable "aws_region_copies" {
   type        = list(string)
   default     = []
 }
-
+/*
 variable "az_region" {
   description = "The Azure region where the Resource Group exists."
   type        = string
@@ -28,7 +28,7 @@ variable "az_subscription_id" {
 variable "az_compute_gallery" {
   type    = string
 }
-
+*/
 variable "department" {
   description = "Value for the department tag."
   type        = string

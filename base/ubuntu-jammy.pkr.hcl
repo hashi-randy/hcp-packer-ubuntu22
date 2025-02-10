@@ -71,13 +71,13 @@ source "azure-arm" "base" {
     storage_account_type = "Standard_LRS"
   }
 
-  azure_tags = {
-    owner      = var.owner
-    department = var.department
-    build-time = local.timestamp
+ azure_tags = {
+   owner      = var.owner
+   department = var.department
+   build-time = local.timestamp
   }
 
-  use_azure_cli_auth = true
+ use_azure_cli_auth = true
 }
 
 build {
